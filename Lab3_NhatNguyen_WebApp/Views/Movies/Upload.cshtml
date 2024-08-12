@@ -1,0 +1,162 @@
+﻿@using Lab3_NhatNguyen_WebApp.Utilities;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model MovieFormModel
+@{
+    Movie movie = ViewBag.Movie;
+    string value = "";
+    string action = "/admin/movies/upload";
+    bool disabled = false;
+    if(movie != null)
+    {
+        action = $"/admin/movies/upload/{movie.IMDBID}";
+    }
+}
+<div class="form-container">
+    <form class="container w-50 mt-5 border border-2 p-5" method="post" action="@action" enctype="multipart/form-data">
+        <h1 class="text-center">
+            Upload Movie
+        </h1>
+        @if (!String.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="mb-3">
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.Error
+                </div>
+            </div>
+        }
+        @if (!String.IsNullOrEmpty(ViewBag.Success))
+        {
+            <div class="mb-3">
+                <div class="alert alert-success" role="alert">
+                    @ViewBag.Success
+                </div>
+            </div>
+        }
+        <div class="mb-3">
+            @if(movie != null)
+            {
+                value = movie.IMDBID;
+                disabled = true;
+            }
+            <label asp-for="IMDBID" class="form-label">*IMBd ID</label>
+            <a target="_blank" class="text-sm-center link-info" href="https://en.wikipedia.org/wiki/Template:IMDb_title#:~:text=The%20page%20URL%20should%20look,after%20tt%20in%20the%20URL.">How to search IMDb ID</a>
+            <input type="text" class="form-control disabled" id="imdbId" asp-for="IMDBID" disabled="@disabled" value="@value">
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = movie.Title;
+            }
+            <label asp-for="Title" class="form-label">*Title</label>
+            <input type="text" class="form-control" asp-for="Title" value="@value">
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = String.Join(",", movie.Actors);
+            }
+            <label asp-for="Actor" class="form-label">*Actor</label>
+            <input type="text" class="form-control" asp-for="Actor" value="@value">
+            <div class="form-text text-light">Enter multiple actors separted by comma(,)</div>
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = movie.Description;
+            }
+            <label asp-for="Description" class="form-label">*Description</label>
+            <textarea type="text" class="form-control" id="displayName" name="Description" rows="5" maxlength="200">@value</textarea>
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = String.Join(", ",movie.Directors);
+            }
+            <label asp-for="Director" class="form-label">*Director</label>
+            <input type="text" class="form-control" id="director" asp-for="Director" value="@value">
+            <div class="form-text text-light">Enter multiple directors separted by comma(,)</div>
+        </div>
+        <div class="mb-3">            
+            <label class="form-label">*Genre</label>
+            <div class="row row-cols-3">
+                <div class="col">
+                    <select class="form-select" asp-for="MainGenre">
+                        <option value="" selected>None</option>
+                        @foreach(var item in GenreManagement.genres)
+                        {
+                            if(movie != null && item == movie?.Genre[0])
+                            {
+                                <option value="@item" selected>@item</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }                   
+                    </select>
+                </div>
+                <div class="col">
+                    <select class="form-select" asp-for="SecondGenre">
+                        <option selected >None</option>
+                        @foreach (var item in GenreManagement.genres)
+                        {                            
+                            if (movie != null && movie.Genre.Count > 1 && item == movie.Genre[1])
+                            {
+                                <option value="@item" selected>@item</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = movie.IMDBRating.ToString();
+            }
+            <label asp-for="IMDBRating" class="form-label">IMDBRating</label>
+            <input type="text" class="form-control" id="IMDBRating" asp-for="IMDBRating" value="@value">
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = movie.Language;
+            }
+            <label asp-for="Language" class="form-label">*Language</label>
+            <input type="text" class="form-control" id="Language" asp-for="Language" value="@value">
+        </div>
+        <div class="mb-3">
+            @if (movie != null)
+            {
+                value = movie.ReleasedTime.ToString();
+            }
+            <label asp-for="ReleasedTime" class="form-label">*ReleasedTime</label>
+            <input type="number" class="form-control" id="ReleasedTime" asp-for="ReleasedTime" value="@value" min="1900" max="2023">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="thumbnailPath">Thumbnail</label>
+            <input type="file" class="form-control" id="thumbnailPath" name="thumbnailPath" accept="image/png, image/gif, image/jpeg">
+            @if(movie != null)
+            {
+                <div class="form-text text-light">Upload new file will overwrite the old one</div>
+            }           
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="videoPath">*Video</label>
+            <input type="file" class="form-control" id="videoPath" name="videoPath" accept="video/mp4,video/x-m4v,video/*">
+            @if (movie != null)
+            {
+                <div class="form-text text-light">Upload new file will overwrite the old one</div>
+            }
+        </div>
+        <div class="d-grid col-4 mx-auto">
+            <button type="submit" class="btn btn-outline-warning btn-lg">Upload</button>
+        </div>
+    </form>    
+</div>

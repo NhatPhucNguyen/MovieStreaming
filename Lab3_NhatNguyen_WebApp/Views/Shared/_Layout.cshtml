@@ -1,0 +1,67 @@
+﻿
+@{
+    var isAuthenticated = Context.User.Identity.IsAuthenticated;
+    var displayName = Context.User.Identity.Name;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Lab3_NhatNguyen_MovieWebApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Lab3_NhatNguyen_WebApp.styles.css" asp-append-version="true" />
+    <link rel="icon" href="~/assets//video-player.png">
+</head>
+<body class="bg-dark text-white">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/movies"><img src="~/assets/video-player.png" width="50px"/></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto ms-2 mb-2 mb-lg-0 fs-5 fw-bold">
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="/movies">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/movies">Your Movies</a>
+                        </li>
+                    </ul>
+                    @if(!isAuthenticated){
+                        <div class="d-flex gap-3">
+                            <a class="btn btn-success nav-link text-white" href="/login">Login</a>
+                            <a class="btn btn-warning nav-link text-black" href="/signup">Signup</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-3 align-items-center">
+                            <span class="text-success">@displayName</span>
+                            <a class="btn btn-danger nav-link text-white" asp-controller="Home" asp-action="Logout">Logout</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid mh-100">
+        <main role="main" class="mh-100">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="footer mt-auto bg-dark text-white">
+        <div class="container">
+            &copy; 2023 - CentennialCollege_NhatNguyen
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

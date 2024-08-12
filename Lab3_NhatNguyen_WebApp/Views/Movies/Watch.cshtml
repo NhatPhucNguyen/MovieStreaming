@@ -1,0 +1,14 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Movie movie = ViewBag.Movie;
+}
+<div class="ratio ratio-16x9">
+    <video class="embed-responsive-item" controls preload="metadata" poster="@ViewBag.Poster">
+        <source src="@ViewBag.Src" type="video/mp4"/>
+    </video>
+</div>
+<div class="container text-center mt-2">
+    <a class="btn btn-warning" href="/movies/@movie.IMDBID">Back</a>
+</div>

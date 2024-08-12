@@ -1,0 +1,58 @@
+html {
+  font-size: 14px;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  min-height:100%;
+  padding-bottom:5rem;
+}
+.form-container {
+    padding-bottom: 5rem;
+}
+form{
+    animation:fadeDown 0.4s ease-in-out;
+}
+@keyframes fadeDown {
+    from {
+        opacity:0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/*Home page styles*/
+.home-container,.detail-container {
+    background-image: url("../assets/home-background-3.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-shadow: 0 0 5px 5px #212529 inset;
+}
+.intro-panel{
+    animation:fadeLeftIn 0.6s ease-in-out;
+}
+
+.card-movie{
+    min-height:510px;
+    min-width:350px;
+}
+
+@keyframes fadeLeftIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

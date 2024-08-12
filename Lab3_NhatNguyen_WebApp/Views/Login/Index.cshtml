@@ -1,0 +1,36 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Login";
+    @model User
+}
+<div class="form-container">
+    <form class="container w-50 mt-5 border border-2 p-5" action="/login" method="post">
+        <h1 class="text-center">
+            Login
+        </h1>
+        @if (!String.IsNullOrEmpty(ViewBag.Message))
+        {
+            <div class="mb-3">
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.Message
+                </div>
+            </div>
+        }
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email address</label>
+            <input asp-for="Email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="example@gmail.com">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input asp-for="Password" type="password" class="form-control" id="exampleInputPassword1">
+        </div>
+        <div class="mb-3 text-center">
+            <span>Not a member ? </span><a href="/signup">Register</a>
+        </div>
+        <div class="d-grid col-4 mx-auto">
+            <button type="submit" class="btn btn-outline-success btn-lg">Login</button>
+        </div>
+    </form>
+</div>

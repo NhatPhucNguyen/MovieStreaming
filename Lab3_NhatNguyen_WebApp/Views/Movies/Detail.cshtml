@@ -1,0 +1,199 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Review
+@{
+    Movie movie = ViewBag.Movie;
+    ViewData["Title"] = movie.Title;
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+    ViewBag.CurrentUser = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+}
+<div>
+    <div class="container-fluid detail-container" style="background-image:url(https://moviesdatabucket.s3.ca-central-1.amazonaws.com/@movie.ThumbnailKey)">
+        <div class="container d-flex flex-column pt-5 pb-4 bg-dark bg-opacity-75 w-75">
+            <h1 class="mb-4">@movie.Title</h1>
+            <p class="mb-4 fs-5">@movie.Description</p>
+            <div class="mb-4 fs-5 fw-bold">
+                <span>Genre: </span>
+                @foreach (var gen in movie.Genre)
+                {
+                    if(gen == "None")
+                    {
+                        continue;
+                    }
+                    if (movie.Genre.Last() == gen)
+                    {
+                        <span class="text-info">@gen</span>
+                    }
+                    else
+                    {
+                        <span class="text-info">@gen, </span>
+                    }
+                }
+            </div>
+            <div class="mb-4 fs-5 fw-bold">
+                <span>Director(s): </span>
+                @foreach (var director in movie.Directors)
+                {
+                    if (movie.Directors.Last() == director)
+                    {
+                        <span class="text-info">@director</span>
+                    }
+                    else
+                    {
+                        <span class="text-info">@director, </span>
+                    }
+                }
+            </div>
+            <div class="mb-4 fs-5 fw-bold">
+                <span>Actor(s): </span>
+                @foreach (var actor in movie.Actors)
+                {
+                    if (movie.Actors.Last() == actor)
+                    {
+                        <span class="text-info">@actor</span>
+                    }
+                    else
+                    {
+                        <span class="text-info">@actor, </span>
+                    }
+                }
+            </div>
+            <div class="mb-4 fs-5 fw-bold">
+                <span>Released: </span>
+                <span class="text-info">@movie.ReleasedTime</span>
+            </div>
+            <div class="mb-4 fs-5 fw-bold">
+                <span>Language: </span>
+                <span class="text-info">@movie.Language</span>
+            </div>
+            <div class="mb-4 fs-5 fw-bold d-flex gap-3">
+                <div>
+                    <span>IMDb Rating: </span>
+                    <span class="text-info">@movie.IMDBRating</span>
+                </div>
+                <div>
+                    <span>Average Member Rating: </span>
+                    <span class="text-info">@movie.Rating/10</span>
+                </div>
+            </div>
+            <div class="btn-group gap-5">
+                <a class="btn btn-warning btn-lg" href="/movies/watch/@movie.IMDBID">Play</a>
+                <button type="button" class="btn btn-warning btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">Review</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        @if(movie.Reviews.Count > 0)
+        {          
+            <section>
+                <div class="container my-5 py-5">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-12 col-lg-10">
+                            @foreach(var review in movie.Reviews)
+                            {
+                                <!--Comment card-->                                
+                                <div class="card text-light bg-dark">
+                                    <div class="card-body p-4">
+                                        @if(movie.Reviews.First() == review)
+                                        {
+                                            <h3 class="mb-4 text-decoration-underline">Recent comments:</h3>
+                                        }
+                                        <div class="d-flex flex-start">
+                                            <div>
+                                                <div>
+                                                    <span class="fw-bold mb-1">@review.Displayname</span>
+                                                    @{
+                                                        TimeSpan span = DateTime.Now - review.DateTime;
+                                                        string displaySpan = span.Minutes == 0 ? $"Recent" : $"{span.Minutes} minutes ago";
+                                                        if (span.Hours >= 1)
+                                                        {
+                                                            displaySpan = span.Hours.ToString() + " hours ago";
+                                                        }
+                                                        if(span.Days >= 1)
+                                                        {
+                                                            displaySpan = span.Days.ToString() + " days ago";
+                                                        }
+                                                    }
+                                                    <small class="ms-2">@displaySpan</small>
+                                                </div>
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <p class="mb-0 me-4">
+                                                        Rating:
+                                                        <span class="badge bg-primary fs-6">@review.UserRating</span>                                                        
+                                                    </p>
+                                                    @if(ViewBag.CurrentUser == review.Email && span.Days < 1)
+                                                    {                                                        
+                                                        <button class="btn btn-link text-success" data-bs-toggle="modal" data-bs-target="#modal-@movie.Reviews.IndexOf(review)">Edit</button>
+                                                        <a class="btn btn-link text-danger" href="/movies/@movie.IMDBID/delete/@review.ReviewId">Delete</a>
+                                                        <!-- Edit Modal -->
+                                                        <div class="modal fade text-black" id="modal-@movie.Reviews.IndexOf(review)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <form class="modal-content" method="post" action="/movies/@movie.IMDBID/review/@review.ReviewId">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="exampleModalLabel">Edit Review</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div>                                                                            
+                                                                            <div class="form-floating mb-4">
+                                                                                <textarea name="Comment" class="form-control" placeholder="Leave a comment here" style="height: 100px">@review.Comment</textarea>
+                                                                                <label for="Comment">Comments</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input class="form-control" type="number" min="1" max="10" placeholder="Rate" asp-for="UserRating" value="@review.UserRating" />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                        <input type="submit" class="btn btn-primary" value="Submit" />
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    }                                                   
+                                                </div>
+                                                <p class="mb-0">
+                                                    @review.Comment
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="my-0" />
+                                </div>                                
+                            }                                       
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade text-black" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="post" action="/movies/@movie.IMDBID">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div method="post" action="/movies/@movie.IMDBID">
+                        <div class="form-floating mb-4">
+                            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" asp-for="Comment"></textarea>
+                            <label for="floatingTextarea">Comments</label>
+                        </div>
+                        <div>
+                            <input class="form-control" type="number" min="1" max="10" placeholder="Rate" asp-for="UserRating"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>    
+</div>
